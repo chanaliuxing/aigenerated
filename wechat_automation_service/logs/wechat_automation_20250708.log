@@ -1,0 +1,22 @@
+2025-07-08 21:17:48 - wechat_automation - INFO - Starting service startup test
+2025-07-08 21:17:48 - wechat_automation - INFO - Service instance created
+2025-07-08 21:17:48 - wechat_automation - INFO - Testing component initialization...
+2025-07-08 21:17:48 - wechat_automation - INFO - Workflow engine initialized successfully
+2025-07-08 21:17:48 - wechat_automation.websocket - INFO - WebSocket client initialized
+2025-07-08 21:17:48 - wechat_automation - INFO - WebSocket client initialized successfully
+2025-07-08 21:17:48 - wechat_automation - INFO - Basic actions initialized successfully
+2025-07-08 21:17:48 - wechat_automation - INFO - All components initialized successfully!
+2025-07-08 21:17:48 - wechat_automation - INFO - Available capabilities: ['send_message', 'receive_message', 'auto_reply', 'search_contact', 'monitor_messages', 'open_application', 'take_screenshot', 'click_element', 'type_text']
+2025-07-08 21:17:48 - wechat_automation - INFO - Active workflows: 0
+2025-07-08 21:17:48 - wechat_automation - INFO - Service startup test completed successfully!
+2025-07-08 22:31:07 - wechat_automation - INFO - Starting service startup test
+2025-07-08 22:31:07 - wechat_automation - INFO - Service instance created
+2025-07-08 22:31:07 - wechat_automation - INFO - Testing component initialization...
+2025-07-08 22:31:07 - wechat_automation - INFO - Workflow engine initialized successfully
+2025-07-08 22:31:07 - wechat_automation.websocket - INFO - WebSocket client initialized
+2025-07-08 22:31:07 - wechat_automation - INFO - WebSocket client initialized successfully
+2025-07-08 22:31:07 - wechat_automation - INFO - Basic actions initialized successfully
+2025-07-08 22:31:07 - wechat_automation - INFO - All components initialized successfully!
+2025-07-08 22:31:07 - wechat_automation - INFO - Available capabilities: ['send_message', 'receive_message', 'auto_reply', 'search_contact', 'monitor_messages', 'open_application', 'take_screenshot', 'click_element', 'type_text']
+2025-07-08 22:31:07 - wechat_automation - INFO - Active workflows: 0
+2025-07-08 22:31:07 - wechat_automation - INFO - Service startup test completed successfully!

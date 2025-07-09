@@ -87,13 +87,17 @@ class WeChatAutomationService:
     def _start_system_tray(self):
         """Start system tray application"""
         try:
-            from PyQt5.QtWidgets import QApplication
-            import sys
-            
-            app = QApplication(sys.argv)
-            self.system_tray = SystemTrayApp(self)
-            self.system_tray.show()
-            app.exec_()
+            try:
+                from PyQt5.QtWidgets import QApplication
+                import sys
+                
+                app = QApplication(sys.argv)
+                self.system_tray = SystemTrayApp(self)
+                self.system_tray.show()
+                app.exec_()
+            except ImportError:
+                logger.warning("PyQt5 not available, system tray disabled")
+                self.system_tray = SystemTrayApp(self)  # Will use dummy implementation
         except Exception as e:
             logger.error(f"Error starting system tray: {e}")
     
