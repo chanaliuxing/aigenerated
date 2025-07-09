@@ -1,0 +1,206 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: legalbot-postgres
+    environment:
+      POSTGRES_DB: legalbot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+
+  # Redis Cache (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: legalbot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+
+  # Chat Orchestrator Service
+  chat-orchestrator:
+    build:
+      context: ./chat_orchestrator_service
+      dockerfile: Dockerfile
+    container_name: legalbot-orchestrator
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=legalbot
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - PORT=3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+  # Python Consumer Service
+  python-consumer:
+    build:
+      context: ./py_consumer
+      dockerfile: Dockerfile
+    container_name: legalbot-consumer
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=legalbot
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - REDIS_URL=redis://redis:6379
+      - DEFAULT_AI_PROVIDER=openai
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - LOG_LEVEL=INFO
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
+
+  # Admin Panel
+  admin-panel:
+    build:
+      context: ./my-admin-panel
+      dockerfile: Dockerfile
+    container_name: legalbot-admin
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=your-nextauth-secret
+      - NEXTAUTH_URL=http://localhost:3001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - chat-orchestrator
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+
+  # Web Server
+  web-server:
+    build:
+      context: ./webserver
+      dockerfile: Dockerfile
+    container_name: legalbot-webserver
+    environment:
+      - FLASK_ENV=production
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=legalbot
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+      - PORT=5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+
+  # WeChat Automation Service (runs on host for GUI access)
+  # wechat-automation:
+  #   build:
+  #     context: ./wechat_automation_service
+  #     dockerfile: Dockerfile
+  #   container_name: legalbot-wechat
+  #   environment:
+  #     - DISPLAY=${DISPLAY}
+  #     - ORCHESTRATOR_URL=http://chat-orchestrator:3000
+  #   volumes:
+  #     - /tmp/.X11-unix:/tmp/.X11-unix
+  #   depends_on:
+  #     - chat-orchestrator
+  #   networks:
+  #     - legalbot-network
+  #   restart: unless-stopped
+
+  # RAG Service
+  rag-service:
+    build:
+      context: ./rag
+      dockerfile: Dockerfile
+    container_name: legalbot-rag
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=legalbot
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    depends_on:
+      - postgres
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+    volumes:
+      - ./rag/data:/app/data
+      - ./rag/models:/app/models
+
+  # ChatGPT Microservice
+  chatgpt-service:
+    build:
+      context: ./chatgpt_microservice
+      dockerfile: Dockerfile
+    container_name: legalbot-chatgpt
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PORT=8000
+    ports:
+      - "8000:8000"
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: legalbot-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - chat-orchestrator
+      - admin-panel
+      - web-server
+    networks:
+      - legalbot-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  legalbot-network:
+    driver: bridge

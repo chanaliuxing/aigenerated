@@ -1,0 +1,53 @@
+{
+  "name": "legal-chatbot",
+  "version": "1.0.0",
+  "description": "Sophisticated legal consultation chatbot system with automation capabilities",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:orchestrator\" \"npm run dev:admin\" \"npm run dev:webserver\" \"npm run dev:consumer\"",
+    "dev:orchestrator": "cd chat_orchestrator_service && npm run dev",
+    "dev:admin": "cd my-admin-panel && npm run dev",
+    "dev:webserver": "cd webserver && python run.py",
+    "dev:consumer": "cd py_consumer && python start_consumer.py",
+    "dev:wechat": "cd wechat_automation_service && python main.py",
+    "install:all": "npm install && npm run install:orchestrator && npm run install:admin && npm run install:python",
+    "install:orchestrator": "cd chat_orchestrator_service && npm install",
+    "install:admin": "cd my-admin-panel && npm install",
+    "install:python": "pip install -r requirements.txt",
+    "db:setup": "node scripts/setup-database.js",
+    "db:migrate": "node scripts/migrate-database.js",
+    "db:seed": "node scripts/seed-database.js",
+    "build": "npm run build:orchestrator && npm run build:admin",
+    "build:orchestrator": "cd chat_orchestrator_service && npm run build",
+    "build:admin": "cd my-admin-panel && npm run build",
+    "test": "npm run test:orchestrator && npm run test:admin && npm run test:python",
+    "test:orchestrator": "cd chat_orchestrator_service && npm test",
+    "test:admin": "cd my-admin-panel && npm test",
+    "test:python": "python -m pytest tests/",
+    "lint": "npm run lint:orchestrator && npm run lint:admin && npm run lint:python",
+    "lint:orchestrator": "cd chat_orchestrator_service && npm run lint",
+    "lint:admin": "cd my-admin-panel && npm run lint",
+    "lint:python": "black . && flake8 .",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": [
+    "legal",
+    "chatbot",
+    "ai",
+    "automation",
+    "wechat",
+    "consultation",
+    "microservices"
+  ],
+  "author": "Legal Chatbot Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1"
+  }
+}
