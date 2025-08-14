@@ -1,0 +1,7 @@
+node_modules/
+chat_orchestrator_service/node_modules/
+my-admin-panel/node_modules/
+__pycache__/
+wechat_automation_service/__pycache__/
+py_consumer/__pycache__/
+*.pyc

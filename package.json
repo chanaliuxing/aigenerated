@@ -23,7 +23,7 @@
     "test": "npm run test:orchestrator && npm run test:admin && npm run test:python",
     "test:orchestrator": "cd chat_orchestrator_service && npm test",
     "test:admin": "cd my-admin-panel && npm test",
-    "test:python": "python -m pytest tests/",
+    "test:python": "python -m pytest",
     "lint": "npm run lint:orchestrator && npm run lint:admin && npm run lint:python",
     "lint:orchestrator": "cd chat_orchestrator_service && npm run lint",
     "lint:admin": "cd my-admin-panel && npm run lint",
